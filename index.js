@@ -23,7 +23,7 @@ app.get("/", async (req, res) => {
 
 app.all("/api/wxMessage", async (req, res) => {
   const headers = req.headers;
-  console.log("received request", req.body, result.data);
+  console.log("received req", req);
   res.send("success");
 });
 
