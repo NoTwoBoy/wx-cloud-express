@@ -21,7 +21,7 @@ app.get("/", async (req, res) => {
   res.sendFile(path.join(__dirname, "index.html"));
 });
 
-app.get("/api/wxMessage", async (req, res) => {
+app.all("/api/wxMessage", async (req, res) => {
   const headers = req.headers;
   const weixinAPI = `http://api.weixin.qq.com/cgi-bin/message/custom/send`;
   const payload = {
