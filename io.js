@@ -27,7 +27,7 @@ const sendTemplateMsg = (openid) => {
     },
   };
 
-  return instance
+  return wxAxios
     .post("/cgi-bin/message/template/send", data)
     .then((res) => {
       console.log(res);
