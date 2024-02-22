@@ -2,8 +2,9 @@ const path = require("path");
 const express = require("express");
 const cors = require("cors");
 const morgan = require("morgan");
-const axios = require("axios");
+
 const { init: initDB, Counter } = require("./db");
+const { sendTemplateMsg } = require("./io");
 
 const logger = morgan("tiny");
 
@@ -14,8 +15,6 @@ app.use(express.json());
 app.use(cors());
 app.use(logger);
 
-const client = axios.default;
-
 // 首页
 app.get("/", async (req, res) => {
   res.sendFile(path.join(__dirname, "index.html"));
@@ -23,7 +22,11 @@ app.get("/", async (req, res) => {
 
 app.all("/api/wxMessage", async (req, res) => {
   const headers = req.headers;
-  console.log("received req", req);
+  const openid = headers["x-wx-openid"];
+  console.log("received req", headers, req.body);
+  if (!openid) return res.send("no openid");
+  console.log("send template msg", openid);
+  sendTemplateMsg(openid);
   res.send("success");
 });
 
