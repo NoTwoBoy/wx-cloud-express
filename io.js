@@ -3,13 +3,13 @@ const axios = require("axios").default;
 // https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=APPID&secret=APPSECRET
 
 const wxAxios = axios.create({
-  baseURL: "https://api.weixin.qq.com",
+  baseURL: "http://api.weixin.qq.com",
   timeout: 5000,
 });
 
 const sendTemplateMsg = (openid) => {
   const data = {
-    touser: openid,
+    touser: "o-75863dZNopi_O-GvZMbbr3Sdmo",
     template_id: "ariEPkZ48zMxp90ACYUoJW4hocdvaTAEQfwhtapjzRI",
     miniprogram: {
       appid: "wx900c368579e941a8",
