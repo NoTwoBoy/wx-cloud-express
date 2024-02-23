@@ -41,9 +41,9 @@ app.get("/api/userInfo", async (req, res) => {
 });
 
 app.post("/api/sendTemplateMsg", async (req, res) => {
-  console.log("sendTemplateMsg", req.params);
-  if (!req.params.openid) return res.send({ code: 1, msg: "openid 不能为空" });
-  res.send(await sendTemplateMsg(req.params.openid));
+  console.log("sendTemplateMsg", req.body);
+  if (!req.body.openid) return res.send({ code: 1, msg: "openid 不能为空" });
+  res.send(await sendTemplateMsg(req.body.openid));
 });
 
 // 更新计数
