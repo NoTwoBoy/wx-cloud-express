@@ -21,7 +21,7 @@ app.get("/", async (req, res) => {
 });
 
 app.all("/api/wxMessage", async (req, res) => {
-  console.log("received wx message", req.method);
+  console.log("received wx message");
   console.log("method", req.method);
   console.log("body", req.body);
   console.log("params", req.params);
@@ -35,6 +35,7 @@ app.get("/api/users", async (req, res) => {
 
 app.get("/api/userInfo", async (req, res) => {
   console.log("userInfo", req.query);
+  console.log("params", req.params);
   if (!req.query.openid) return res.send({ code: 1, msg: "openid 不能为空" });
   res.send(await getUserInfo(req.query.openid));
 });
