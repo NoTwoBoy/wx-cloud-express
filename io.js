@@ -21,7 +21,7 @@ const getUsers = () => {
 
 const getUserInfo = (openid) => {
   return wxAxios
-    .get(`/cgi-bin/user/info?openid=${openid}`)
+    .get(`/cgi-bin/user/info?from_appid=wxb02d4dc9dd5c610b&openid=${openid}`)
     .then((res) => {
       console.log(res.data);
       return res.data;
