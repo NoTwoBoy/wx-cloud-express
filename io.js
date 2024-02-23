@@ -28,9 +28,10 @@ const sendTemplateMsg = (openid) => {
   };
 
   return wxAxios
-    .post("/cgi-bin/message/template/send", data)
+    .post(`/cgi-bin/message/template/send?from_appid=wxb02d4dc9dd5c610b`, data)
     .then((res) => {
-      console.log(res);
+      console.log(res.data);
+      return res.data;
     })
     .catch((err) => {
       console.log(err);

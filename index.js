@@ -26,8 +26,7 @@ app.all("/api/wxMessage", async (req, res) => {
   console.log("received req", headers, req.body);
   if (!openid) return res.send("no openid");
   console.log("send template msg", openid);
-  sendTemplateMsg();
-  res.send("success");
+  res.send(sendTemplateMsg());
 });
 
 // 更新计数
