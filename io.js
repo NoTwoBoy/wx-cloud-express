@@ -42,11 +42,11 @@ const sendTemplateMsg = (openid) => {
     },
     topcolor: "#FF0000",
     data: {
-      "thing3.DATA": {
+      thing3: {
         value: "主力流入因子",
         color: "#173177",
       },
-      "thing4.DATA": {
+      thing4: {
         value: "天山算力",
       },
     },
