@@ -34,9 +34,9 @@ app.get("/api/users", async (req, res) => {
 });
 
 app.get("/api/userInfo", async (req, res) => {
-  console.log("userInfo", req.params);
-  if (!req.params.openid) return res.send({ code: 1, msg: "openid 不能为空" });
-  res.send(await getUserInfo(req.params.openid));
+  console.log("userInfo", req.query);
+  if (!req.query.openid) return res.send({ code: 1, msg: "openid 不能为空" });
+  res.send(await getUserInfo(req.query.openid));
 });
 
 app.post("/api/sendTemplateMsg", async (req, res) => {
