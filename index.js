@@ -33,7 +33,7 @@ app.get("/api/users", async (req, res) => {
   res.send(await getUsers());
 });
 
-app.get("api/userInfo", async (req, res) => {
+app.get("/api/userInfo", async (req, res) => {
   console.log("userInfo", req.params);
   if (!req.params.openid) return res.send({ code: 1, msg: "openid 不能为空" });
   res.send(await getUserInfo(req.params.openid));
