@@ -4,7 +4,7 @@ const cors = require("cors");
 const morgan = require("morgan");
 
 const { init: initDB, Counter } = require("./db");
-const { sendTemplateMsg } = require("./io");
+const { getUsers, sendTemplateMsg, getUserInfo } = require("./io");
 
 const logger = morgan("tiny");
 
@@ -21,12 +21,28 @@ app.get("/", async (req, res) => {
 });
 
 app.all("/api/wxMessage", async (req, res) => {
-  const headers = req.headers;
-  const openid = headers["x-wx-openid"];
-  console.log("received req", headers, req.body);
-  if (!openid) return res.send("no openid");
-  console.log("send template msg", openid);
-  res.send(sendTemplateMsg());
+  console.log("received wx message", req.method);
+  console.log("method", req.method);
+  console.log("body", req.body);
+  console.log("params", req.params);
+  console.log("query", req.query);
+  res.send("success");
+});
+
+app.get("/api/users", async (req, res) => {
+  res.send(await getUsers());
+});
+
+app.get("api/userInfo", async (req, res) => {
+  console.log("userInfo", req.params);
+  if (!req.params.openid) return res.send({ code: 1, msg: "openid 不能为空" });
+  res.send(await getUserInfo(req.params.openid));
+});
+
+app.post("/api/sendTemplateMsg", async (req, res) => {
+  console.log("sendTemplateMsg", req.params);
+  if (!req.params.openid) return res.send({ code: 1, msg: "openid 不能为空" });
+  res.send(await sendTemplateMsg(req.params.openid));
 });
 
 // 更新计数
