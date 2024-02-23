@@ -35,7 +35,7 @@ const sendTemplateMsg = (openid) => {
     template_id: "ariEPkZ48zMxp90ACYUoJW4hocdvaTAEQfwhtapjzRI",
     miniprogram: {
       appid: "wx900c368579e941a8",
-      pagepath: "/pages/home/index",
+      pagepath: "pages/home/index",
     },
     topcolor: "#FF0000",
     data: {
