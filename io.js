@@ -7,6 +7,10 @@ const wxAxios = axios.create({
   timeout: 5000,
 });
 
+wxAxios.interceptors.response.use((res) => {
+  return res.data;
+});
+
 const getUsers = () => {
   return wxAxios
     .get(`/cgi-bin/user/get?from_appid=wxb02d4dc9dd5c610b`)
@@ -35,7 +39,6 @@ const sendTemplateMsg = (openid) => {
     template_id: "ariEPkZ48zMxp90ACYUoJW4hocdvaTAEQfwhtapjzRI",
     miniprogram: {
       appid: "wx900c368579e941a8",
-      pagepath: "pages/home/index",
     },
     topcolor: "#FF0000",
     data: {
