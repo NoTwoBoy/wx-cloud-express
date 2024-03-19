@@ -27,11 +27,13 @@ const checkSignature = (query) => {
   const sha1 = crypto.createHash("sha1");
   const str = [timestamp, nonce, TOKEN].sort().join();
   sha1.update(str);
-  return sha1.digest("hex") !== signature;
+  const sha1str = sha1.digest("hex");
+  console.log("sha1str", sha1str);
+  return sha1str === signature;
 };
 
 app.all("/api/wxMessage", async (req, res) => {
-  console.log("received wx message");
+  console.log("Received wx message");
   console.log("method", req.method);
   console.log("body", req.body);
   console.log("params", req.params);
