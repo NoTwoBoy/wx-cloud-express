@@ -26,7 +26,7 @@ app.all("/api/wxMessage", async (req, res) => {
   console.log("body", req.body);
   console.log("params", req.params);
   console.log("query", req.query);
-  res.send("success");
+  res.send(true);
 });
 
 app.get("/api/users", async (req, res) => {
