@@ -25,7 +25,7 @@ app.get("/", async (req, res) => {
 const checkSignature = (query) => {
   const { nonce, signature, timestamp } = query;
   const sha1 = crypto.createHash("sha1");
-  const str = [timestamp, nonce, TOKEN].sort().join();
+  const str = [timestamp, nonce, TOKEN].sort().join("");
   sha1.update(str);
   const sha1str = sha1.digest("hex");
   console.log("sha1str", sha1str);

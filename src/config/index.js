@@ -1,5 +1,5 @@
 const TOKEN = "kungfu-trader";
 
-exports = {
+module.exports = {
   TOKEN,
 };
