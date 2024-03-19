@@ -1,4 +1,4 @@
-const TOKEN = "kungfu-trader";
+const TOKEN = "KungfuTrader";
 
 module.exports = {
   TOKEN,

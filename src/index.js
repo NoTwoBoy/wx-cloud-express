@@ -39,7 +39,7 @@ app.all("/api/wxMessage", async (req, res) => {
   console.log("params", req.params);
   console.log("query", req.query);
   const result = checkSignature(req.query);
-  res.send(result && "success");
+  res.send(result && req.query.echostr);
 });
 
 app.get("/api/users", async (req, res) => {
