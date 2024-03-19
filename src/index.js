@@ -2,7 +2,9 @@ const path = require("path");
 const express = require("express");
 const cors = require("cors");
 const morgan = require("morgan");
+const crypto = require("crypto");
 
+const { TOKEN } = require("./config");
 const { init: initDB, Counter } = require("./db");
 const { getUsers, sendTemplateMsg, getUserInfo } = require("./io");
 
@@ -20,13 +22,22 @@ app.get("/", async (req, res) => {
   res.sendFile(path.join(__dirname, "index.html"));
 });
 
+const checkSignature = (query) => {
+  const { nonce, signature, timestamp } = req.query;
+  const sha1 = crypto.createHash("sha1");
+  const str = [timestamp, nonce, TOKEN].sort().join();
+  sha1.update(str);
+  return sha1.digest("hex") !== signature;
+};
+
 app.all("/api/wxMessage", async (req, res) => {
   console.log("received wx message");
   console.log("method", req.method);
   console.log("body", req.body);
   console.log("params", req.params);
   console.log("query", req.query);
-  res.send(true);
+  const result = checkSignature(req.query);
+  res.send(result ?? "success");
 });
 
 app.get("/api/users", async (req, res) => {
