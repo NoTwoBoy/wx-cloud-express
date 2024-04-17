@@ -18,6 +18,9 @@ WORKDIR /app
 # 拷贝包管理文件
 COPY package*.json /app/
 
+RUN node --version
+RUN npm --version
+
 # npm 源，选用国内镜像源以提高下载速度
 RUN npm config set registry https://mirrors.cloud.tencent.com/npm/
 # RUN npm config set registry https://registry.npm.taobao.org/
