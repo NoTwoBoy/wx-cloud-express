@@ -110,4 +110,12 @@ async function bootstrap() {
   });
 }
 
+process.addListener("uncaughtException", (err) => {
+  console.error("uncaughtException", err);
+});
+
+process.addListener("unhandledRejection", (err) => {
+  console.error("unhandledRejection", err);
+});
+
 bootstrap();
