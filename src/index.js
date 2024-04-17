@@ -42,6 +42,16 @@ app.all("/api/wxMessage", async (req, res) => {
   res.send(result && req.query.echostr);
 });
 
+app.all("/api/kungfuMpMsg", async (req, res) => {
+  console.log("Received kungfu mp message");
+  console.log("method", req.method);
+  console.log("body", req.body);
+  console.log("params", req.params);
+  console.log("query", req.query);
+  const result = checkSignature(req.query);
+  res.send(result && req.query.echostr);
+});
+
 app.get("/api/users", async (req, res) => {
   res.send(await getUsers());
 });
