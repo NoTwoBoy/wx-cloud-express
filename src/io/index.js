@@ -38,7 +38,7 @@ const sendTemplateMsg = (openid) => {
     touser: openid,
     template_id: "ariEPkZ48zMxp90ACYUoJW4hocdvaTAEQfwhtapjzRI",
     miniprogram: {
-      appid: "wx900c368579e941a8",
+      appid: "wx9bfff192f2941309",
     },
     topcolor: "#FF0000",
     data: {
