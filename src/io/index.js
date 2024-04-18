@@ -47,7 +47,7 @@ const sendTemplateMsg = (openid) => {
         color: "#173177",
       },
       thing4: {
-        value: "天山算力",
+        value: "功夫量化",
       },
     },
   };
