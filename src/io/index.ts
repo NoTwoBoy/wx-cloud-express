@@ -1,4 +1,4 @@
-const axios = require("axios").default;
+import axios from "axios";
 
 // https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=APPID&secret=APPSECRET
 
@@ -23,7 +23,7 @@ const getUsers = () => {
     });
 };
 
-const getUserInfo = (openid) => {
+const getUserInfo = (openid: string) => {
   return wxAxios
     .get(`/cgi-bin/user/info?from_appid=wxb02d4dc9dd5c610b&openid=${openid}`)
     .then((res) => {
@@ -33,7 +33,7 @@ const getUserInfo = (openid) => {
     .catch();
 };
 
-const sendTemplateMsg = (openid) => {
+const sendTemplateMsg = (openid: string) => {
   const data = {
     touser: openid,
     template_id: "ariEPkZ48zMxp90ACYUoJW4hocdvaTAEQfwhtapjzRI",
@@ -63,8 +63,4 @@ const sendTemplateMsg = (openid) => {
     });
 };
 
-module.exports = {
-  getUsers,
-  getUserInfo,
-  sendTemplateMsg,
-};
+export { getUsers, getUserInfo, sendTemplateMsg };

@@ -1,7 +1,11 @@
-const { Sequelize, DataTypes } = require("sequelize");
+import { Sequelize, DataTypes } from "sequelize";
 
 // 从环境变量中读取数据库配置
-const { MYSQL_USERNAME, MYSQL_PASSWORD, MYSQL_ADDRESS = "" } = process.env;
+const {
+  MYSQL_USERNAME = "root",
+  MYSQL_PASSWORD,
+  MYSQL_ADDRESS = "",
+} = process.env;
 
 const [host, port] = MYSQL_ADDRESS.split(":");
 
@@ -11,7 +15,7 @@ const sequelize = new Sequelize(
   MYSQL_PASSWORD,
   {
     host,
-    port,
+    port: parseInt(port),
     dialect: "mysql" /* one of 'mysql' | 'mariadb' | 'postgres' | 'mssql' */,
   }
 );
@@ -57,8 +61,4 @@ async function init() {
 }
 
 // 导出初始化方法和模型
-module.exports = {
-  init,
-  User,
-  Counter,
-};
+export { init, User, Counter };

@@ -1,14 +1,14 @@
-const path = require("path");
-const crypto = require("crypto");
-const express = require("express");
-const cors = require("cors");
-const morgan = require("morgan");
+import path from "path";
+import crypto from "crypto";
+import express from "express";
+import cors from "cors";
+import morgan from "morgan";
 
-const response = require("./middleware/response");
+import response from "./middleware/response";
 
-const { TOKEN } = require("./config");
-const { init: initDB, Counter } = require("./db");
-const { getUsers, sendTemplateMsg, getUserInfo } = require("./io");
+import { TOKEN } from "./config";
+import { init as initDB, Counter } from "./db";
+import { getUsers, sendTemplateMsg, getUserInfo } from "./io";
 
 const logger = morgan("tiny");
 
@@ -25,7 +25,7 @@ app.get("/", async (req, res) => {
   res.sendFile(path.join(__dirname, "index.html"));
 });
 
-const checkSignature = (query) => {
+const checkSignature = (query: express.Request["query"]) => {
   const { nonce, signature, timestamp } = query;
   const sha1 = crypto.createHash("sha1");
   const str = [timestamp, nonce, TOKEN].sort().join("");
@@ -62,8 +62,12 @@ app.get("/api/users", async (req, res) => {
 app.get("/api/userInfo", async (req, res) => {
   console.log("userInfo", req.query);
   console.log("params", req.params);
-  if (!req.query.openid) return res.send({ code: 1, msg: "openid 不能为空" });
-  res.send(await getUserInfo(req.query.openid));
+  if (!req.query.openid) return res.error("openid 不能为空");
+  if (typeof req.query.openid === "string") {
+    res.success(await getUserInfo(req.query.openid));
+  } else {
+    res.error("openid 需为字符串");
+  }
 });
 
 app.post("/api/sendTemplateMsg", async (req, res) => {
@@ -82,7 +86,7 @@ app.post("/api/count", async (req, res) => {
       truncate: true,
     });
   }
-  res.send(await Counter.count());
+  res.success(await Counter.count());
 });
 
 // 获取计数
