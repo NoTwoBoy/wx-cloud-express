@@ -29,7 +29,7 @@ RUN npm config set registry https://mirrors.cloud.tencent.com/npm/
 RUN npm install
 
 # 编译
-RUN npm build
+RUN npm run build
 
 # 将当前目录（dockerfile所在目录）下所有文件都拷贝到工作目录下（.dockerignore中文件除外）
 COPY . /app
