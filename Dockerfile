@@ -28,6 +28,9 @@ RUN npm config set registry https://mirrors.cloud.tencent.com/npm/
 # npm 安装依赖
 RUN npm install
 
+RUN pwd
+RUN ll
+
 # 编译
 RUN npm run build
 
