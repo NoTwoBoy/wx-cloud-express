@@ -56,7 +56,7 @@ app.all("/api/kungfuMpMsg", async (req, res) => {
 });
 
 app.get("/api/users", async (req, res) => {
-  res.send(await getUsers());
+  res.success(await getUsers());
 });
 
 app.get("/api/userInfo", async (req, res) => {
@@ -73,7 +73,7 @@ app.get("/api/userInfo", async (req, res) => {
 app.post("/api/sendTemplateMsg", async (req, res) => {
   console.log("sendTemplateMsg", req.body);
   if (!req.body.openid) return res.send({ code: 1, msg: "openid 不能为空" });
-  res.send(await sendTemplateMsg(req.body.openid));
+  res.success(await sendTemplateMsg(req.body.openid));
 });
 
 // 更新计数
@@ -92,13 +92,13 @@ app.post("/api/count", async (req, res) => {
 // 获取计数
 app.get("/api/count", async (req, res) => {
   const result = await Counter.count();
-  res.send(result);
+  res.success(result);
 });
 
 // 小程序调用，获取微信 Open ID
 app.get("/api/wx_openid", async (req, res) => {
   if (req.headers["x-wx-source"]) {
-    res.send(req.headers["x-wx-openid"]);
+    res.success(req.headers["x-wx-openid"]);
   }
 });
 
