@@ -1,8 +1,10 @@
 const path = require("path");
+const crypto = require("crypto");
 const express = require("express");
 const cors = require("cors");
 const morgan = require("morgan");
-const crypto = require("crypto");
+
+const response = require("./middleware/response");
 
 const { TOKEN } = require("./config");
 const { init: initDB, Counter } = require("./db");
@@ -15,6 +17,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.raw());
 app.use(express.json());
 app.use(cors());
+app.use(response);
 app.use(logger);
 
 // 首页
@@ -79,19 +82,13 @@ app.post("/api/count", async (req, res) => {
       truncate: true,
     });
   }
-  res.send({
-    code: 0,
-    data: await Counter.count(),
-  });
+  res.send(await Counter.count());
 });
 
 // 获取计数
 app.get("/api/count", async (req, res) => {
   const result = await Counter.count();
-  res.send({
-    code: 0,
-    data: result,
-  });
+  res.send(result);
 });
 
 // 小程序调用，获取微信 Open ID
