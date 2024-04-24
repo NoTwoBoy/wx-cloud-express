@@ -1,7 +1,7 @@
 import { defineRouteHandler } from "../defineRouteHandler";
 import { Counter } from "../../db";
 
-export const utilRouteHandler = defineRouteHandler("/util", (router) => {
+defineRouteHandler("/util", (router) => {
   router.post("/api/count", async (req, res) => {
     const { action } = req.body;
     if (action === "inc") {
