@@ -7,8 +7,9 @@ const responseMiddleware: RequestHandler = (_, res, next) => {
    * @param {any} data - 要发送的数据
    * @param {number} [statusCode] - 响应状态码
    */
-  res.success = (data, statusCode) => {
-    res.status(statusCode || 200).json({
+  res.success = (data: any, statusCode: number = 200) => {
+    return res.status(statusCode).json({
+      code: statusCode || 200,
       success: true,
       data: data,
     });
@@ -19,8 +20,9 @@ const responseMiddleware: RequestHandler = (_, res, next) => {
    * @param {string} message - 错误消息
    * @param {number} [statusCode] - 响应状态码
    */
-  res.error = (message, statusCode) => {
-    res.status(statusCode || 500).json({
+  res.error = (message: string, statusCode: number = 500) => {
+    return res.status(statusCode).json({
+      code: statusCode || 500,
       success: false,
       message: message,
     });
