@@ -2,7 +2,7 @@ import { Express, IRouter, Router } from "express";
 
 const ApiPrefix = "/api";
 
-type Handler = (app: Express) => void;
+export type Handler = (app: Express) => void;
 
 export const handlers: Handler[] = [];
 
