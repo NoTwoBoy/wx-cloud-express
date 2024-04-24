@@ -27,6 +27,7 @@ async function bootstrap() {
   await initDB();
   app.listen(port, () => {
     console.log("启动成功", port);
+    console.log("routes: ", app.routes);
   });
 }
 
