@@ -21,13 +21,30 @@ app.use(logger);
 
 registerRoutes(app);
 
+function printRoutes(app: express.Express) {
+  app._router.stack.forEach((middleware: any) => {
+    if (middleware.route) {
+      // 如果是路由中间件则打印出路径
+      console.log(middleware.route.path);
+    } else if (middleware.name === "router") {
+      // 对于路由器中间件
+      middleware.handle.stack.forEach((handler: any) => {
+        if (handler.route) {
+          console.log(handler.route.path);
+        }
+      });
+    }
+  });
+}
+
 const port = process.env.PORT || 80;
 
 async function bootstrap() {
   await initDB();
   app.listen(port, () => {
     console.log("启动成功", port);
-    console.log("routes: ", app.routes);
+    console.log("All Routes: ");
+    printRoutes(app);
   });
 }
 
