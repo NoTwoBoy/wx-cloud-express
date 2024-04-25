@@ -4,13 +4,21 @@ import { getUserInfo, getUsers, sendTemplateMsg } from "../../io";
 
 defineRouteHandler("/oa/kungfu", (router) => {
   router.all("/message", async (req, res) => {
-    console.log("Received wx message");
-    console.log("method", req.method);
-    console.log("body", req.body);
-    console.log("params", req.params);
-    console.log("query", req.query);
     const result = checkSignature(req.query);
-    res.send(result && req.query.echostr);
+
+    if (result) {
+      console.log("Received wx message");
+      if (req.method === "GET") {
+        return res.status(200).send(req.query.echostr);
+      } else if (req.method === "POST") {
+        const xml = req.body.xml;
+        console.log("xml", JSON.stringify(xml));
+
+        return;
+      }
+    }
+
+    res.error("非法请求");
   });
 
   router.get("/users", async (req, res) => {
