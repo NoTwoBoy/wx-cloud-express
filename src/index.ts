@@ -16,7 +16,7 @@ const app = express();
 app.use(express.urlencoded({ extended: false }));
 app.use(express.raw());
 app.use(express.json());
-app.use(xmlParser({ normalizeTags: false }));
+app.use(xmlParser({ normalizeTags: false, explicitArray: false }));
 app.use(cors());
 app.use(wxRequest);
 app.use(response);
