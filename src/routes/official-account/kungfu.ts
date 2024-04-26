@@ -1,8 +1,15 @@
 import { defineRouteHandler } from "../defineRouteHandler";
 import { checkSignature } from "../../utils";
 import { getUserInfo, getUsers, sendTemplateMsg } from "../../io";
+import { useWxMsg } from "../../hooks/useWxMsg";
 
 defineRouteHandler("/oa/kungfu", (router) => {
+  const wxMsgHandler = useWxMsg();
+
+  wxMsgHandler.on("text", (msg, req, res) => {
+    console.log("msg", msg);
+  });
+
   router.all("/message", async (req, res) => {
     const result = checkSignature(req.query);
 
@@ -11,8 +18,10 @@ defineRouteHandler("/oa/kungfu", (router) => {
       if (req.method === "GET") {
         return res.status(200).send(req.query.echostr);
       } else if (req.method === "POST") {
-        const xml = req.body.xml;
+        const xml = req.body.xml as WxMsg.AllMsg;
         console.log("xml", JSON.stringify(xml));
+
+        wxMsgHandler.emit(xml, req, res);
 
         return;
       }
