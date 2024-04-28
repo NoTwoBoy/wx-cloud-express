@@ -1,5 +1,6 @@
 import { defineRouteHandler } from "../defineRouteHandler";
-import { checkSignature } from "../../utils";
+import { checkSignature, tryAwait } from "../../utils";
+import { syncUser } from "../../db/user";
 
 defineRouteHandler("/mp/kungfu", (router) => {
   router.all("/message", async (req, res) => {
@@ -12,13 +13,28 @@ defineRouteHandler("/mp/kungfu", (router) => {
     res.send(result && req.query.echostr);
   });
 
-  router.post("/subscribe", (req, res) => {
+  router.post("/subscribe", async (req, res) => {
     console.log("req.wxOpenid", req.wxOpenid);
     console.log("req.wxUnionid", req.wxUnionid);
     console.log("req.wxSource", req.wxSource);
     console.log("req.params", req.params);
     console.log("req.query", req.query);
     console.log("req.body", req.body);
-    res.success(null);
+
+    if (req.wxUnionid) {
+      const [err, user] = await tryAwait(
+        syncUser({
+          wx_unionid: req.wxUnionid,
+          kf_oa_openid: req.wxOpenid,
+          subscribed_factor: true,
+        })
+      );
+
+      if (user) {
+        res.success(user);
+      } else {
+        res.error(err.message);
+      }
+    }
   });
 });
