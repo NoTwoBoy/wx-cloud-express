@@ -24,15 +24,15 @@ export const User = sequelize.define<UserInstance>("User", {
   },
   wx_unionid: {
     type: DataTypes.STRING,
-    allowNull: false,
+    allowNull: true,
   },
   kf_mp_openid: {
     type: DataTypes.STRING,
-    allowNull: false,
+    allowNull: true,
   },
   kf_oa_openid: {
     type: DataTypes.STRING,
-    allowNull: false,
+    allowNull: true,
   },
   subscribed_factor: {
     type: DataTypes.BOOLEAN,

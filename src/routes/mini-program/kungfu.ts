@@ -28,7 +28,7 @@ defineRouteHandler("/mp/kungfu", (router) => {
             wx_unionid: req.wxUnionid,
           },
           {
-            kf_oa_openid: req.wxOpenid,
+            kf_mp_openid: req.wxOpenid,
             subscribed_factor: true,
           }
         )
