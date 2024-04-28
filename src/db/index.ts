@@ -20,45 +20,10 @@ const sequelize = new Sequelize(
   }
 );
 
-// 定义数据模型
-const Counter = sequelize.define("Counter", {
-  count: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    defaultValue: 1,
-  },
-});
-
-const User = sequelize.define("User", {
-  id: {
-    type: DataTypes.INTEGER,
-    primaryKey: true,
-    autoIncrement: true,
-  },
-  wx_unionid: {
-    type: DataTypes.STRING,
-    allowNull: false,
-  },
-  kf_mp_openid: {
-    type: DataTypes.STRING,
-    allowNull: false,
-  },
-  kf_oa_openid: {
-    type: DataTypes.STRING,
-    allowNull: false,
-  },
-  subscribed_factor: {
-    type: DataTypes.BOOLEAN,
-    allowNull: false,
-    defaultValue: false,
-  },
-});
-
 // 数据库初始化方法
 async function init() {
-  await Counter.sync({ alter: true });
-  await User.sync({ alter: true });
+  await sequelize.sync({ alter: true });
 }
 
 // 导出初始化方法和模型
-export { init, User, Counter };
+export { sequelize, init };

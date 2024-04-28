@@ -3,9 +3,9 @@ import { Request, Response } from "express";
 declare global {
   namespace Express {
     export interface Request {
-      wxSource: string;
-      wxOpenid: string;
-      wxUnionid: string;
+      wxSource?: string;
+      wxOpenid?: string;
+      wxUnionid?: string;
     }
 
     export interface Response {

@@ -1,6 +1,8 @@
 export {};
 
 declare global {
+  type MakeRequired<T, K extends keyof T> = Omit<T, K> & Required<Pick<T, K>>;
+
   namespace WxMsg {
     type MsgType =
       | "text"

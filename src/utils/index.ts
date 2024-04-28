@@ -10,3 +10,26 @@ export const checkSignature = (query: express.Request["query"]) => {
   const sha1str = sha1.digest("hex");
   return sha1str === signature;
 };
+
+export function tryCatch<T extends (...args: any[]) => any>(fn: T) {
+  return function (
+    ...args: Parameters<T>
+  ): [null, ReturnType<T>] | [Error, null] {
+    try {
+      const result = fn(...args) as ReturnType<T>;
+      return [null, result];
+    } catch (err) {
+      return [err as Error, null];
+    }
+  };
+}
+
+export async function tryAwait<T, U = Error>(
+  promise: Promise<T>
+): Promise<[U, undefined] | [null, T]> {
+  return promise
+    .then<[null, T]>((data: T) => [null, data])
+    .catch<[U, undefined]>((err: U) => {
+      return [err, undefined];
+    });
+}

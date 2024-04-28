@@ -1,13 +1,35 @@
 import { defineRouteHandler } from "../defineRouteHandler";
-import { checkSignature } from "../../utils";
+import { checkSignature, tryAwait } from "../../utils";
 import { getUserInfo, getUsers, sendTemplateMsg } from "../../io";
 import { useWxMsg } from "../../hooks/useWxMsg";
+import { syncUser } from "../../db/user";
 
 defineRouteHandler("/oa/kungfu", (router) => {
   const wxMsgHandler = useWxMsg();
 
   wxMsgHandler.on("text", (msg, req, res) => {
-    console.log("msg", msg);
+    console.log("text msg", msg);
+  });
+
+  wxMsgHandler.on("event.subscribe", async (msg, req, res) => {
+    console.log("subscribe", msg);
+
+    if (req.wxUnionid) {
+      const [err] = await tryAwait(
+        syncUser({
+          wx_unionid: req.wxUnionid,
+          kf_oa_openid: req.wxOpenid,
+        })
+      );
+
+      if (err) {
+        console.error(err);
+      }
+    }
+  });
+
+  wxMsgHandler.on("event.unsubscribe", (msg, req, res) => {
+    console.log("unsubscribe", msg);
   });
 
   router.all("/message", async (req, res) => {
@@ -19,7 +41,6 @@ defineRouteHandler("/oa/kungfu", (router) => {
         return res.status(200).send(req.query.echostr);
       } else if (req.method === "POST") {
         const xml = req.body.xml as WxMsg.AllMsg;
-        console.log("xml", JSON.stringify(xml));
 
         wxMsgHandler.emit(xml, req, res);
 
