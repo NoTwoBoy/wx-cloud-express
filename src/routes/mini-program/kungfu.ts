@@ -23,11 +23,15 @@ defineRouteHandler("/mp/kungfu", (router) => {
 
     if (req.wxUnionid) {
       const [err, user] = await tryAwait(
-        syncUser({
-          wx_unionid: req.wxUnionid,
-          kf_oa_openid: req.wxOpenid,
-          subscribed_factor: true,
-        })
+        syncUser(
+          {
+            wx_unionid: req.wxUnionid,
+          },
+          {
+            kf_oa_openid: req.wxOpenid,
+            subscribed_factor: true,
+          }
+        )
       );
 
       if (user) {
