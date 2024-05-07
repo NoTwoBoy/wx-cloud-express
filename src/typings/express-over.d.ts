@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import { PayloadInfo, ParsePayload } from "../middleware/payload";
 
 declare global {
   namespace Express {
@@ -6,6 +7,13 @@ declare global {
       wxSource?: string;
       wxOpenid?: string;
       wxUnionid?: string;
+
+      payload: <T extends PayloadInfo>(
+        payloadInfo: T
+      ) => {
+        valid: boolean;
+        payload: ParsePayload<T>;
+      };
     }
 
     export interface Response {

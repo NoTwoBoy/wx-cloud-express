@@ -33,3 +33,57 @@ export async function tryAwait<T, U = Error>(
       return [err, undefined];
     });
 }
+
+interface DataSliceHandler {
+  then(callback: () => void): void;
+}
+export const dataOperationBySliceInEventLoop = <T>(
+  data: T[],
+  doSomethingCallback: (dataItem: T, index: number, sliceIndex: number) => void,
+  sliceLength = 1000
+): DataSliceHandler => {
+  const onFinishCbs: Array<() => void> = [];
+  const onFinish = (cb: () => void) => {
+    onFinishCbs.push(cb);
+  };
+
+  let i = 0,
+    sliceIndex = 0;
+  const len = data.length;
+  const bestEventLoopTask = setImmediate;
+  let timer: NodeJS.Immediate | number | undefined = undefined;
+  const runner = () => {
+    if (timer) {
+      clearImmediate(timer as NodeJS.Immediate);
+    }
+    timer = bestEventLoopTask(() => {
+      for (let j = 0; j < sliceLength && i < len; i++, j++) {
+        try {
+          doSomethingCallback(data[i], i, sliceIndex);
+        } catch (error) {
+          console.error(error);
+          return;
+        }
+      }
+
+      if (i === len) {
+        if (onFinishCbs.length) {
+          onFinishCbs.forEach((cb) => cb());
+        }
+      } else {
+        sliceIndex++;
+
+        runner();
+      }
+    });
+  };
+
+  runner();
+
+  return {
+    then: (cb: () => void) => {
+      onFinish(cb);
+      return Promise.resolve();
+    },
+  };
+};

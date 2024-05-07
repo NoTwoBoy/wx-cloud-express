@@ -33,21 +33,30 @@ const getUserInfo = (openid: string) => {
     .catch();
 };
 
-const sendTemplateMsg = (openid: string) => {
+const sendFactorResult = (config: {
+  openid: string;
+  factorType: "featured" | "self";
+  factorName: string;
+  moduleName: string;
+}) => {
+  const { openid, factorType, factorName, moduleName } = config;
+  const isFeatured = factorType === "featured";
+
   const data = {
     touser: openid,
     template_id: "ariEPkZ48zMxp90ACYUoJW4hocdvaTAEQfwhtapjzRI",
     miniprogram: {
       appid: "wx9bfff192f2941309",
+      pagepath: `pages/factor/index?factorType=${
+        isFeatured ? 0 : 1
+      }&moduleName=${moduleName}`,
     },
-    topcolor: "#FF0000",
     data: {
       thing3: {
-        value: "主力流入因子",
-        color: "#173177",
+        value: factorName,
       },
       thing4: {
-        value: "功夫量化",
+        value: isFeatured ? "功夫精选" : "自研",
       },
     },
   };
@@ -63,4 +72,4 @@ const sendTemplateMsg = (openid: string) => {
     });
 };
 
-export { getUsers, getUserInfo, sendTemplateMsg };
+export { getUsers, getUserInfo, sendFactorResult };

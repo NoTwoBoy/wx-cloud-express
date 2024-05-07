@@ -4,10 +4,10 @@ import { tryAwait, tryCatch } from "../utils";
 
 interface UserAttributes {
   id: number;
-  wx_unionid?: string;
-  kf_mp_openid?: string;
-  kf_oa_openid?: string;
-  subscribed_factor?: boolean;
+  wx_unionid?: string | null;
+  kf_mp_openid?: string | null;
+  kf_oa_openid?: string | null;
+  subscribed_factor?: boolean | null;
 }
 
 interface UserCreationAttributes extends Optional<UserAttributes, "id"> {}

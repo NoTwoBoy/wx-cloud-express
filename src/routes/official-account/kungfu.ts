@@ -1,8 +1,14 @@
 import { defineRouteHandler } from "../defineRouteHandler";
-import { checkSignature, tryAwait } from "../../utils";
-import { getUserInfo, getUsers, sendTemplateMsg } from "../../io";
+import {
+  checkSignature,
+  dataOperationBySliceInEventLoop,
+  tryAwait,
+} from "../../utils";
+import { getUserInfo, getUsers, sendFactorResult } from "../../io";
 import { useWxMsg } from "../../hooks/useWxMsg";
-import { syncUser } from "../../db/user";
+import { User, syncUser } from "../../db/user";
+import { Op } from "sequelize";
+import { p } from "@antfu/utils";
 
 defineRouteHandler("/oa/kungfu", (router) => {
   const wxMsgHandler = useWxMsg();
@@ -16,10 +22,14 @@ defineRouteHandler("/oa/kungfu", (router) => {
 
     if (req.wxUnionid) {
       const [err] = await tryAwait(
-        syncUser({
-          wx_unionid: req.wxUnionid,
-          kf_oa_openid: req.wxOpenid,
-        })
+        syncUser(
+          {
+            wx_unionid: req.wxUnionid,
+          },
+          {
+            kf_oa_openid: req.wxOpenid,
+          }
+        )
       );
 
       if (err) {
@@ -66,9 +76,53 @@ defineRouteHandler("/oa/kungfu", (router) => {
     }
   });
 
-  router.post("/sendTemplateMsg", async (req, res) => {
-    console.log("sendTemplateMsg", req.body);
-    if (!req.body.openid) return res.send({ code: 1, msg: "openid 不能为空" });
-    res.success(await sendTemplateMsg(req.body.openid));
+  router.post("/notify/factor", async (req, res) => {
+    const { valid, payload } = req.payload({
+      type: {
+        type: ["featured", "self"] as const,
+      },
+      moduleName: {
+        type: String,
+        required: true,
+      },
+      name: {
+        type: String,
+        required: true,
+      },
+    });
+
+    if (valid) {
+      const { moduleName, name } = payload;
+
+      const users = await User.findAll({
+        where: {
+          subscribed_factor: true,
+          kf_oa_openid: {
+            [Op.not]: null,
+          },
+        },
+      });
+
+      console.log(
+        "users",
+        users.length,
+        users.map((u) => u.kf_oa_openid).join(", ")
+      );
+
+      dataOperationBySliceInEventLoop(
+        users,
+        (user) => {
+          if (user.kf_oa_openid) {
+            return sendFactorResult({
+              openid: user.kf_oa_openid,
+              factorType: "featured",
+              factorName: payload.name,
+              moduleName,
+            });
+          }
+        },
+        200
+      ).then(() => res.success("ok"));
+    }
   });
 });
