@@ -48,7 +48,7 @@ const checkPayload = <T extends PayloadInfo>(
           res.error(`${key} must be one of ${info.type.join(",")}`);
           return false;
         }
-      } else if (!(value instanceof info.type)) {
+      } else if (!(value.constructor === info.type)) {
         res.error(`${key} must be ${info.type.name}`);
         return false;
       }
