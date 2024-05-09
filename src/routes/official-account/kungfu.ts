@@ -14,14 +14,14 @@ defineRouteHandler("/oa/kungfu", (router) => {
   const wxMsgHandler = useWxMsg();
   const wxReplyHandler = useWxReply();
 
-  wxReplyHandler.onKeywords(/test/, [
+  wxReplyHandler.onKeywords(/^test$/, [
     {
       MsgType: "text",
       Content: "测试成功",
     },
   ]);
 
-  wxReplyHandler.onKeywords(/test2/, [
+  wxReplyHandler.onKeywords(/^test2$/, [
     {
       MsgType: "text",
       Content: "测试成功1",
