@@ -34,10 +34,15 @@ const getUserInfo = (openid: string) => {
 };
 
 const sendMessage = (openid: string, message: any) => {
-  return wxAxios.post(`/cgi-bin/message/custom/send`, {
-    touser: openid,
-    ...message,
-  });
+  return wxAxios
+    .post(`/cgi-bin/message/custom/send`, {
+      touser: openid,
+      ...message,
+    })
+    .then((res) => {
+      console.log(res);
+      return res;
+    });
 };
 
 const sendFactorResult = (config: {
