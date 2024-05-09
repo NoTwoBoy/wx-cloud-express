@@ -19,12 +19,6 @@ defineRouteHandler("/oa/kungfu", (router) => {
       MsgType: "text",
       Content: "测试成功",
     },
-    {
-      MsgType: "image",
-      Image: {
-        MediaId: "MEDIA_ID",
-      },
-    },
   ]);
 
   wxReplyHandler.onKeywords(/test2/, [
@@ -42,12 +36,6 @@ defineRouteHandler("/oa/kungfu", (router) => {
     {
       MsgType: "text",
       Content: "欢迎关注",
-    },
-    {
-      MsgType: "image",
-      Image: {
-        MediaId: "MEDIA_ID",
-      },
     },
   ]);
 

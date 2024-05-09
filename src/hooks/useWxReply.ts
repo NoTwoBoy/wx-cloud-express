@@ -28,7 +28,7 @@ export const useWxReply = () => {
     };
   };
 
-  const buildReplyXml = (reply: WxReply.AllReplyMsg) => {
+  const buildReplyXml = (reply: Required<WxReply.AllReplyMsg>) => {
     const builder = new xml2js.Builder({
       rootName: "xml",
       headless: true,
@@ -36,7 +36,11 @@ export const useWxReply = () => {
     return builder.buildObject(reply);
   };
 
-  const replyByResponseXml = (res: Response, reply: WxReply.AllReplyMsg) => {
+  const replyByResponseXml = (
+    res: Response,
+    reply: Required<WxReply.AllReplyMsg>
+  ) => {
+    console.log("reply by response xml", reply);
     res.setHeader("Content-Type", "application/xml");
     res.send(buildReplyXml(reply));
   };
@@ -99,6 +103,7 @@ export const useWxReply = () => {
   };
 
   const replyByCustomSend = (reply: Required<WxReply.AllReplyMsg>) => {
+    console.log("reply by custom send", reply);
     return sendMessage(reply.ToUserName, reply2sendMsg(reply));
   };
 
