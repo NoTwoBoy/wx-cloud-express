@@ -43,14 +43,11 @@ defineRouteHandler("/oa/kungfu", (router) => {
   });
 
   router.all("/message", async (req, res) => {
-    const result = checkSignature(req.query);
-
-    console.log("OA kungfu message", result);
-    console.log("query", req.query);
-    console.log("body", req.body);
-    console.log("method", req.method);
-    if (result) {
+    if (req.wxSource) {
       console.log("Received wx message");
+      console.log("query", req.query);
+      console.log("body", req.body);
+      console.log("method", req.method);
       if (req.method === "GET") {
         return res.status(200).send(req.query.echostr);
       } else if (req.method === "POST") {
