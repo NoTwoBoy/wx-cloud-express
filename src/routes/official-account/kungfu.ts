@@ -27,6 +27,17 @@ defineRouteHandler("/oa/kungfu", (router) => {
     },
   ]);
 
+  wxReplyHandler.onKeywords(/test2/, [
+    {
+      MsgType: "text",
+      Content: "测试成功1",
+    },
+    {
+      MsgType: "text",
+      Content: "测试成功2",
+    },
+  ]);
+
   wxReplyHandler.onSubscribe([
     {
       MsgType: "text",
