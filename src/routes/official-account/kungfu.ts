@@ -56,23 +56,23 @@ defineRouteHandler("/oa/kungfu", (router) => {
   });
 
   router.all("/message", async (req, res) => {
-    if (req.wxSource) {
-      console.log("Received wx message");
-      console.log("query", req.query);
-      console.log("body", req.body);
-      console.log("method", req.method);
-      if (req.method === "GET") {
-        return res.status(200).send(req.query.echostr);
-      } else if (req.method === "POST") {
-        const msg = (req.body.xml || req.body) as WxMsg.AllMsg;
+    // if (req.wxSource) {
+    console.log("Received wx message");
+    console.log("query", req.query);
+    console.log("body", req.body);
+    console.log("method", req.method);
+    if (req.method === "GET") {
+      return res.status(200).send(req.query.echostr);
+    } else if (req.method === "POST") {
+      const msg = (req.body.xml || req.body) as WxMsg.AllMsg;
 
-        wxMsgHandler.emit(msg, req, res);
+      wxMsgHandler.emit(msg, req, res);
 
-        return res.status(200).send("success");
-      }
+      return res.status(200).send("success");
     }
+    // }
 
-    res.success("非法请求");
+    // res.success("非法请求");
   });
 
   router.get("/users", async (req, res) => {
