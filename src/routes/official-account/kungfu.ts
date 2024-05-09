@@ -5,7 +5,13 @@ import {
   dataOperationBySliceInEventLoop,
   tryAwait,
 } from "../../utils";
-import { getUserInfo, getUsers, sendFactorResult, sendMessage } from "../../io";
+import {
+  getAutoReplyInfo,
+  getUserInfo,
+  getUsers,
+  sendFactorResult,
+  sendMessage,
+} from "../../io";
 import { useWxMsg } from "../../hooks/useWxMsg";
 import { useWxReply } from "../../hooks/useWxReply";
 import { User, syncUser } from "../../db/user";
@@ -120,6 +126,10 @@ defineRouteHandler("/oa/kungfu", (router) => {
 
   router.get("/users", async (req, res) => {
     res.success(await getUsers());
+  });
+
+  router.get("/autoReplyInfo", async (req, res) => {
+    res.success(await getAutoReplyInfo());
   });
 
   router.get("/userInfo", async (req, res) => {

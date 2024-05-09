@@ -41,9 +41,13 @@ export const useWxReply = () => {
     reply: Required<WxReply.AllReplyMsg>
   ) => {
     console.log("reply by response xml", reply);
-    res.setHeader("Content-Type", "application/xml");
+
     return new Promise((resolve) => {
-      res.send(buildReplyXml(reply)).end().once("finish", resolve);
+      res
+        .setHeader("Content-Type", "application/xml")
+        .send(buildReplyXml(reply))
+        .end()
+        .once("finish", resolve);
     });
   };
 

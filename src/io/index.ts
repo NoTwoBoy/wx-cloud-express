@@ -33,6 +33,15 @@ const getUserInfo = (openid: string) => {
     .catch();
 };
 
+const getAutoReplyInfo = () => {
+  return wxAxios
+    .get(`/cgi-bin/get_current_autoreply_info?from_appid=wxb02d4dc9dd5c610b`)
+    .then((res) => {
+      console.log(res);
+      return res;
+    });
+};
+
 const sendMessage = (openid: string, message: WxSendMsg.AllSendMsg) => {
   return wxAxios
     .post(
@@ -87,4 +96,10 @@ const sendFactorResult = (config: {
     });
 };
 
-export { getUsers, getUserInfo, sendMessage, sendFactorResult };
+export {
+  getUsers,
+  getUserInfo,
+  getAutoReplyInfo,
+  sendMessage,
+  sendFactorResult,
+};
