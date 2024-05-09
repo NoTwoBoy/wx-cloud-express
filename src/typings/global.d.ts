@@ -66,4 +66,76 @@ declare global {
 
     type AllMsg = TextMsg | AllEventMsg;
   }
+
+  namespace WxReply {
+    type ReplyMsgType = "text" | "image" | "voice" | "video" | "music" | "news";
+
+    interface BaseReplyMsg<T extends ReplyMsgType = ReplyMsgType> {
+      ToUserName: string;
+      FromUserName: string;
+      CreateTime: number;
+      MsgType: T;
+    }
+
+    interface TextReplyMsg extends BaseReplyMsg<"text"> {
+      Content: string;
+    }
+
+    interface Image {
+      MediaId: string;
+    }
+
+    interface ImageReplyMsg extends BaseReplyMsg<"image"> {
+      Image: Image;
+    }
+
+    interface Voice {
+      MediaId: string;
+    }
+
+    interface VoiceReplyMsg extends BaseReplyMsg<"voice"> {
+      Voice: Voice;
+    }
+
+    interface Video {
+      MediaId: string;
+      Title: string;
+      Description: string;
+    }
+
+    interface VideoReplyMsg extends BaseReplyMsg<"video"> {
+      Video: Video;
+    }
+
+    interface Music {
+      Title: string;
+      Description: string;
+      MusicURL: string;
+      HQMusicUrl: string;
+      ThumbMediaId: string;
+    }
+    interface MusicReplyMsg extends BaseReplyMsg<"music"> {
+      Music: Music;
+    }
+
+    interface Article {
+      Title: string;
+      Description: string;
+      PicUrl: string;
+      Url: string;
+    }
+
+    interface NewsReplyMsg extends BaseReplyMsg<"news"> {
+      ArticleCount: number;
+      Articles: WxReply.Article[];
+    }
+
+    type AllReplyMsg =
+      | TextReplyMsg
+      | ImageReplyMsg
+      | VoiceReplyMsg
+      | VideoReplyMsg
+      | MusicReplyMsg
+      | NewsReplyMsg;
+  }
 }

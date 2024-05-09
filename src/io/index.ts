@@ -33,6 +33,13 @@ const getUserInfo = (openid: string) => {
     .catch();
 };
 
+const sendMessage = (openid: string, message: any) => {
+  return wxAxios.post(`/cgi-bin/message/custom/send`, {
+    touser: openid,
+    ...message,
+  });
+};
+
 const sendFactorResult = (config: {
   openid: string;
   factorType: "featured" | "self";
@@ -72,4 +79,4 @@ const sendFactorResult = (config: {
     });
 };
 
-export { getUsers, getUserInfo, sendFactorResult };
+export { getUsers, getUserInfo, sendMessage, sendFactorResult };

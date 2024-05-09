@@ -4,17 +4,30 @@ import {
   dataOperationBySliceInEventLoop,
   tryAwait,
 } from "../../utils";
-import { getUserInfo, getUsers, sendFactorResult } from "../../io";
+import { getUserInfo, getUsers, sendFactorResult, sendMessage } from "../../io";
 import { useWxMsg } from "../../hooks/useWxMsg";
 import { User, syncUser } from "../../db/user";
 import { Op } from "sequelize";
-import { p } from "@antfu/utils";
 
 defineRouteHandler("/oa/kungfu", (router) => {
   const wxMsgHandler = useWxMsg();
 
   wxMsgHandler.on("text", (msg, req, res) => {
     console.log("text msg", msg);
+    if (req.wxOpenid && msg?.MsgType === "text") {
+      sendMessage(req.wxOpenid, {
+        msgtype: "text",
+        text: {
+          content: `收到消息：${msg.Content}`,
+        },
+      });
+      sendMessage(req.wxOpenid, {
+        msgtype: "image",
+        text: {
+          media_id: "test123",
+        },
+      });
+    }
   });
 
   wxMsgHandler.on("event.subscribe", async (msg, req, res) => {
