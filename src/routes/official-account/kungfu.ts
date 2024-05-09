@@ -62,7 +62,7 @@ defineRouteHandler("/oa/kungfu", (router) => {
       }
     }
 
-    res.error("非法请求");
+    res.success("非法请求");
   });
 
   router.get("/users", async (req, res) => {
