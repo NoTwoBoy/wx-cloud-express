@@ -33,7 +33,7 @@ const getUserInfo = (openid: string) => {
     .catch();
 };
 
-const sendMessage = (openid: string, message: any) => {
+const sendMessage = (openid: string, message: WxSendMsg.AllSendMsg) => {
   return wxAxios
     .post(
       `/cgi-bin/message/custom/send?access_token=${process.env.ACCESS_TOKEN}`,

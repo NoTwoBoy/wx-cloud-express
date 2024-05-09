@@ -1,5 +1,7 @@
 import { Response } from "express";
 import xml2js from "xml2js";
+import { sendMessage } from "../io";
+import { tryCatch } from "../utils";
 
 export const useWxReply = () => {
   type ReplyCreation<T extends WxReply.AllReplyMsg> = Omit<
@@ -7,17 +9,13 @@ export const useWxReply = () => {
     "ToUserName" | "FromUserName" | "CreateTime"
   >;
 
-  const keywordsReplies: Array<[RegExp, ReplyCreation<WxReply.AllReplyMsg>[]]> =
-    [];
-  const onKeywords = (
-    reg: RegExp,
-    replies: ReplyCreation<WxReply.AllReplyMsg>[]
-  ) => {
+  const keywordsReplies: Array<[RegExp, WxReply.AllReplyMsg[]]> = [];
+  const onKeywords = (reg: RegExp, replies: WxReply.AllReplyMsg[]) => {
     keywordsReplies.push([reg, replies]);
   };
 
-  let subscribeReplies: ReplyCreation<WxReply.AllReplyMsg>[] = [];
-  const onSubscribe = (replies: ReplyCreation<WxReply.AllReplyMsg>[]) => {
+  let subscribeReplies: WxReply.AllReplyMsg[] = [];
+  const onSubscribe = (replies: WxReply.AllReplyMsg[]) => {
     subscribeReplies = replies;
   };
 
@@ -31,28 +29,127 @@ export const useWxReply = () => {
   };
 
   const buildReplyXml = (reply: WxReply.AllReplyMsg) => {
-    const builder = new xml2js.Builder();
+    const builder = new xml2js.Builder({
+      rootName: "xml",
+      headless: true,
+    });
     return builder.buildObject(reply);
   };
 
-  const triggerKeywordsReply = (msg: WxMsg.TextMsg) => {
+  const replyByResponseXml = (res: Response, reply: WxReply.AllReplyMsg) => {
+    res.setHeader("Content-Type", "application/xml");
+    res.send(buildReplyXml(reply));
+  };
+
+  const reply2sendMsg = (reply: WxReply.AllReplyMsg): WxSendMsg.AllSendMsg => {
+    switch (reply.MsgType) {
+      case "text":
+        return {
+          msgtype: "text",
+          text: {
+            content: reply.Content,
+          },
+        };
+      case "image":
+        return {
+          msgtype: "image",
+          image: {
+            media_id: reply.Image.MediaId,
+          },
+        };
+      case "voice":
+        return {
+          msgtype: "voice",
+          voice: {
+            media_id: reply.Voice.MediaId,
+          },
+        };
+      case "video":
+        return {
+          msgtype: "video",
+          video: {
+            media_id: reply.Video.MediaId,
+          },
+        };
+      case "music":
+        return {
+          msgtype: "music",
+
+          music: {
+            title: reply.Music.Title,
+            description: reply.Music.Description,
+            musicurl: reply.Music.MusicURL,
+            hqmusicurl: reply.Music.HQMusicUrl,
+            thumb_media_id: reply.Music.ThumbMediaId,
+          },
+        };
+      case "news":
+        return {
+          msgtype: "news",
+          news: {
+            articles: reply.Articles.item.map((item) => ({
+              title: item.Title,
+              description: item.Description,
+              url: item.Url,
+              picurl: item.PicUrl,
+            })),
+          },
+        };
+    }
+  };
+
+  const replyByCustomSend = (reply: Required<WxReply.AllReplyMsg>) => {
+    return sendMessage(reply.ToUserName, reply2sendMsg(reply));
+  };
+
+  const reply = (res: Response, replies: Required<WxReply.AllReplyMsg>[]) => {
+    if (replies.length === 0) return;
+    if (replies.length === 1) {
+      return replyByResponseXml(res, replies[0]);
+    } else {
+      replyByResponseXml(res, replies[0]);
+      return replies.slice(1).forEach((reply) => {
+        tryCatch(replyByCustomSend)(reply);
+      });
+    }
+  };
+
+  const triggerKeywordsReply = (res: Response, msg: WxMsg.TextMsg) => {
     const { Content } = msg;
     const baseReply = buildBaseReply(msg);
     for (const [reg, replies] of keywordsReplies) {
       if (reg.test(Content)) {
-        return replies[0];
+        return reply(
+          res,
+          replies.map(
+            (reply) =>
+              ({
+                ...baseReply,
+                ...reply,
+              } as Required<WxReply.AllReplyMsg>)
+          )
+        );
       }
     }
   };
 
   const triggerSubscribeReply = (msg: WxMsg.AllMsg) => {
-    return subscribeReplies;
+    const baseReply = buildBaseReply(msg);
+
+    subscribeReplies.forEach((reply) => {
+      const fullReply = {
+        ...baseReply,
+        ...reply,
+      } as Required<WxReply.AllReplyMsg>;
+
+      replyByCustomSend(fullReply);
+    });
   };
 
   const triggerReply = (msg: WxMsg.AllMsg, res: Response) => {
     switch (msg.MsgType) {
       case "text":
-        return triggerKeywordsReply(msg);
+        return triggerKeywordsReply(res, msg);
       case "event":
         if (msg.Event === "subscribe") {
           return triggerSubscribeReply(msg);
@@ -64,5 +161,7 @@ export const useWxReply = () => {
     onKeywords,
     onSubscribe,
     triggerReply,
+    triggerKeywordsReply,
+    triggerSubscribeReply,
   };
 };

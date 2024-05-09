@@ -16,7 +16,7 @@ export const useWxMsg = () => {
       ? EventMsgMap[E]
       : T extends "text"
       ? WxMsg.TextMsg
-      : null,
+      : never,
     req: Request,
     res: Response
   ) => void;
@@ -37,11 +37,11 @@ export const useWxMsg = () => {
     msgTypeListeners[msgKeyCompose](msg, req, res);
   };
 
-  const on = <T extends MsgKey>(msgType: T, cb: MsgCallback<MsgKey>) => {
+  const on = <T extends MsgKey>(msgType: T, cb: MsgCallback<T>) => {
     if (msgTypeListeners[msgType])
       return console.error(`MsgType ${msgType} already exists`);
 
-    msgTypeListeners[msgType] = cb;
+    msgTypeListeners[msgType] = cb as any;
   };
 
   return {

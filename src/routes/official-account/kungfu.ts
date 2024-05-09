@@ -1,3 +1,4 @@
+import { Op } from "sequelize";
 import { defineRouteHandler } from "../defineRouteHandler";
 import {
   checkSignature,
@@ -6,13 +7,40 @@ import {
 } from "../../utils";
 import { getUserInfo, getUsers, sendFactorResult, sendMessage } from "../../io";
 import { useWxMsg } from "../../hooks/useWxMsg";
+import { useWxReply } from "../../hooks/useWxReply";
 import { User, syncUser } from "../../db/user";
-import { Op } from "sequelize";
 
 defineRouteHandler("/oa/kungfu", (router) => {
   const wxMsgHandler = useWxMsg();
+  const wxReplyHandler = useWxReply();
 
-  wxMsgHandler.on("text", (msg, req, res) => {
+  wxReplyHandler.onKeywords(/test/, [
+    {
+      MsgType: "text",
+      Content: "测试成功",
+    },
+    {
+      MsgType: "image",
+      Image: {
+        MediaId: "MEDIA_ID",
+      },
+    },
+  ]);
+
+  wxReplyHandler.onSubscribe([
+    {
+      MsgType: "text",
+      Content: "欢迎关注",
+    },
+    {
+      MsgType: "image",
+      Image: {
+        MediaId: "MEDIA_ID",
+      },
+    },
+  ]);
+
+  wxMsgHandler.on("text", (msg, _, res) => {
     console.log("text msg", msg);
     if (msg?.MsgType === "text") {
       sendMessage(msg.FromUserName, {
@@ -21,16 +49,12 @@ defineRouteHandler("/oa/kungfu", (router) => {
           content: `收到消息：${msg.Content}`,
         },
       });
-      sendMessage(msg.FromUserName, {
-        msgtype: "image",
-        text: {
-          media_id: "test123",
-        },
-      });
     }
+
+    wxReplyHandler.triggerKeywordsReply(res, msg);
   });
 
-  wxMsgHandler.on("event.subscribe", async (msg, req, res) => {
+  wxMsgHandler.on("event.subscribe", async (msg, req) => {
     console.log("subscribe", msg);
 
     if (req.wxUnionid) {
@@ -49,30 +73,35 @@ defineRouteHandler("/oa/kungfu", (router) => {
         console.error(err);
       }
     }
+
+    wxReplyHandler.triggerSubscribeReply(msg);
   });
 
-  wxMsgHandler.on("event.unsubscribe", (msg, req, res) => {
+  wxMsgHandler.on("event.unsubscribe", (msg) => {
     console.log("unsubscribe", msg);
   });
 
   router.all("/message", async (req, res) => {
-    // if (req.wxSource) {
-    console.log("Received wx message");
-    console.log("query", req.query);
-    console.log("body", req.body);
-    console.log("method", req.method);
-    if (req.method === "GET") {
-      return res.status(200).send(req.query.echostr);
-    } else if (req.method === "POST") {
-      const msg = (req.body.xml || req.body) as WxMsg.AllMsg;
+    const valid = checkSignature(req.query);
 
-      wxMsgHandler.emit(msg, req, res);
+    if (req.wxSource || valid) {
+      console.log("Received wx message");
+      console.log("query", req.query);
+      console.log("body", req.body);
+      console.log("method", req.method);
+      if (req.method === "GET") {
+        return res.status(200).send(req.query.echostr);
+      } else if (req.method === "POST") {
+        const msg = (req.body.xml || req.body) as WxMsg.AllMsg;
 
-      return res.status(200).send("success");
+        wxMsgHandler.emit(msg, req, res);
+
+        return res.status(200).send("success");
+      }
     }
-    // }
 
-    // res.success("非法请求");
+    console.log("invalid request");
+    res.success("非法请求");
   });
 
   router.get("/users", async (req, res) => {

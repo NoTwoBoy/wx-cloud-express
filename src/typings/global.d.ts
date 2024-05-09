@@ -71,9 +71,9 @@ declare global {
     type ReplyMsgType = "text" | "image" | "voice" | "video" | "music" | "news";
 
     interface BaseReplyMsg<T extends ReplyMsgType = ReplyMsgType> {
-      ToUserName: string;
-      FromUserName: string;
-      CreateTime: number;
+      ToUserName?: string;
+      FromUserName?: string;
+      CreateTime?: number;
       MsgType: T;
     }
 
@@ -127,7 +127,7 @@ declare global {
 
     interface NewsReplyMsg extends BaseReplyMsg<"news"> {
       ArticleCount: number;
-      Articles: WxReply.Article[];
+      Articles: { item: WxReply.Article[] };
     }
 
     type AllReplyMsg =
@@ -137,5 +137,71 @@ declare global {
       | VideoReplyMsg
       | MusicReplyMsg
       | NewsReplyMsg;
+  }
+
+  namespace WxSendMsg {
+    type SendMsgType = "text" | "image" | "voice" | "video" | "music" | "news";
+
+    interface BaseSendMsg<T extends SendMsgType = SendMsgType> {
+      msgtype: T;
+    }
+
+    interface TextSendMsg extends BaseSendMsg<"text"> {
+      text: {
+        content: string;
+      };
+    }
+
+    interface ImageSendMsg extends BaseSendMsg<"image"> {
+      image: {
+        media_id: string;
+      };
+    }
+
+    interface VoiceSendMsg extends BaseSendMsg<"voice"> {
+      voice: {
+        media_id: string;
+      };
+    }
+
+    interface VideoSendMsg extends BaseSendMsg<"video"> {
+      video: {
+        media_id: string;
+        thumb_media_id?: string;
+        title?: string;
+        description?: string;
+      };
+    }
+
+    interface MusicSendMsg extends BaseSendMsg<"music"> {
+      music: {
+        title: string;
+        description: string;
+        musicurl: string;
+        hqmusicurl: string;
+        thumb_media_id: string;
+      };
+    }
+
+    interface Article {
+      title: string;
+      description: string;
+      url: string;
+      picurl: string;
+    }
+
+    interface NewsSendMsg extends BaseSendMsg<"news"> {
+      news: {
+        articles: Article[];
+      };
+    }
+
+    type AllSendMsg =
+      | TextSendMsg
+      | ImageSendMsg
+      | VoiceSendMsg
+      | VideoSendMsg
+      | MusicSendMsg
+      | NewsSendMsg;
   }
 }
