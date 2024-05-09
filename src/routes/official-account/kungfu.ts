@@ -55,7 +55,7 @@ defineRouteHandler("/oa/kungfu", (router) => {
 
         wxMsgHandler.emit(msg, req, res);
 
-        return;
+        return res.status(200).send("success");
       }
     }
 

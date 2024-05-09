@@ -27,12 +27,12 @@ export const useWxMsg = () => {
       return console.warn("Invalid msg");
     }
 
-    if (!msgTypeListeners[msg.MsgType]) {
-      return console.warn(`Listener of ${msg.MsgType} not exists`);
-    }
-
     const msgKeyCompose =
       msg.MsgType === "event" ? `${msg.MsgType}.${msg.Event}` : msg.MsgType;
+
+    if (!msgTypeListeners[msgKeyCompose]) {
+      return console.warn(`Listener of ${msgKeyCompose} not exists`);
+    }
 
     msgTypeListeners[msgKeyCompose](msg, req, res);
   };
