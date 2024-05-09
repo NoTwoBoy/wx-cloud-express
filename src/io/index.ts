@@ -33,29 +33,19 @@ const getUserInfo = (openid: string) => {
     .catch();
 };
 
-const getAccessToken = () => {
-  return wxAxios
-    .get(
-      "/cgi-bin/token?grant_type=client_credential&appid=wx16dbe083ab9d6c26&secret=e9d77aed88464f5ddd42340079be3297"
-    )
-    .then((res) => {
-      console.log(res.data);
-      return res.data;
-    });
-};
-
 const sendMessage = (openid: string, message: any) => {
-  return getAccessToken().then((res) => {
-    wxAxios
-      .post(`/cgi-bin/message/custom/send?access_token=${res.access_token}`, {
+  return wxAxios
+    .post(
+      `/cgi-bin/message/custom/send?access_token=${process.env.ACCESS_TOKEN}`,
+      {
         touser: openid,
         ...message,
-      })
-      .then((res) => {
-        console.log(res);
-        return res;
-      });
-  });
+      }
+    )
+    .then((res) => {
+      console.log(res);
+      return res;
+    });
 };
 
 const sendFactorResult = (config: {
