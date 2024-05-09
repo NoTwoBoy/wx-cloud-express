@@ -51,9 +51,9 @@ defineRouteHandler("/oa/kungfu", (router) => {
       if (req.method === "GET") {
         return res.status(200).send(req.query.echostr);
       } else if (req.method === "POST") {
-        const xml = req.body.xml as WxMsg.AllMsg;
+        const msg = (req.body.xml || req.body) as WxMsg.AllMsg;
 
-        wxMsgHandler.emit(xml, req, res);
+        wxMsgHandler.emit(msg, req, res);
 
         return;
       }

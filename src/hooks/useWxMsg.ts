@@ -23,7 +23,13 @@ export const useWxMsg = () => {
   const msgTypeListeners: Record<string, MsgCallback> = {};
 
   const emit = (msg: WxMsg.AllMsg, req: Request, res: Response) => {
-    if (!msgTypeListeners[msg.MsgType]) return;
+    if (!msg?.MsgType) {
+      return console.warn("Invalid msg");
+    }
+
+    if (!msgTypeListeners[msg.MsgType]) {
+      return console.warn(`Listener of ${msg.MsgType} not exists`);
+    }
 
     const msgKeyCompose =
       msg.MsgType === "event" ? `${msg.MsgType}.${msg.Event}` : msg.MsgType;
