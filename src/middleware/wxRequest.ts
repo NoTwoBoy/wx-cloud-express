@@ -7,6 +7,10 @@ const wxRequest: RequestHandler = (req, _, next) => {
   if (req.wxSource) {
     req.wxOpenid = req.headers["x-wx-openid"] as string;
     req.wxUnionid = req.headers["x-wx-unionid"] as string;
+
+    console.log("wx request", req.wxSource);
+    console.log("wx openid", req.wxOpenid);
+    console.log("wx unionid", req.wxUnionid);
   }
 
   next();
