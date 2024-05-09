@@ -14,14 +14,14 @@ defineRouteHandler("/oa/kungfu", (router) => {
 
   wxMsgHandler.on("text", (msg, req, res) => {
     console.log("text msg", msg);
-    if (req.wxOpenid && msg?.MsgType === "text") {
-      sendMessage(req.wxOpenid, {
+    if (msg?.MsgType === "text") {
+      sendMessage(msg.FromUserName, {
         msgtype: "text",
         text: {
           content: `收到消息：${msg.Content}`,
         },
       });
-      sendMessage(req.wxOpenid, {
+      sendMessage(msg.FromUserName, {
         msgtype: "image",
         text: {
           media_id: "test123",
