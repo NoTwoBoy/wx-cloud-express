@@ -1,7 +1,7 @@
 import { Response } from "express";
 import xml2js from "xml2js";
 import { sendMessage } from "../io";
-import { tryCatch } from "../utils";
+import { asyncForEach, tryCatch } from "../utils";
 
 export const useWxReply = () => {
   type ReplyCreation<T extends WxReply.AllReplyMsg> = Omit<
@@ -42,7 +42,9 @@ export const useWxReply = () => {
   ) => {
     console.log("reply by response xml", reply);
     res.setHeader("Content-Type", "application/xml");
-    res.send(buildReplyXml(reply));
+    return new Promise((resolve) => {
+      res.send(buildReplyXml(reply)).end().once("finish", resolve);
+    });
   };
 
   const reply2sendMsg = (reply: WxReply.AllReplyMsg): WxSendMsg.AllSendMsg => {
@@ -78,7 +80,6 @@ export const useWxReply = () => {
       case "music":
         return {
           msgtype: "music",
-
           music: {
             title: reply.Music.Title,
             description: reply.Music.Description,
@@ -112,9 +113,10 @@ export const useWxReply = () => {
     if (replies.length === 1) {
       return replyByResponseXml(res, replies[0]);
     } else {
-      replyByResponseXml(res, replies[0]);
-      return replies.slice(1).forEach((reply) => {
-        tryCatch(replyByCustomSend)(reply);
+      return replyByResponseXml(res, replies[0]).then(() => {
+        asyncForEach(replies.slice(1), (reply) => {
+          return replyByCustomSend(reply);
+        });
       });
     }
   };

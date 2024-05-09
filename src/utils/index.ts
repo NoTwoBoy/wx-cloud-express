@@ -87,3 +87,15 @@ export const dataOperationBySliceInEventLoop = <T>(
     },
   };
 };
+
+export const asyncForEach = async <T>(
+  array: T[],
+  callback: (item: T, index: number, arr: T[]) => Promise<any>
+) => {
+  const length = array.length;
+  for (let index = 0; index < length; index++) {
+    try {
+      await callback(array[index], index, array);
+    } catch (_) {}
+  }
+};
