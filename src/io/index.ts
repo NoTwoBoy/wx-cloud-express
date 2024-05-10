@@ -11,7 +11,7 @@ wxAxios.interceptors.response.use((res) => {
   return res.data;
 });
 
-const { KUNGFU_OA_APPID } = process.env;
+const { KUNGFU_OA_APPID, ACCESS_TOKEN } = process.env;
 
 const getUsers = () => {
   return wxAxios
@@ -47,7 +47,9 @@ const getAutoReplyInfo = () => {
 const sendMessage = (openid: string, message: WxSendMsg.AllSendMsg) => {
   return wxAxios
     .post(
-      `/cgi-bin/message/custom/send?access_token=${process.env.ACCESS_TOKEN}`,
+      `/cgi-bin/message/custom/send${
+        ACCESS_TOKEN ? `?access_token=${ACCESS_TOKEN}` : ""
+      }`,
       {
         touser: openid,
         ...message,

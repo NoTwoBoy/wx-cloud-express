@@ -77,13 +77,6 @@ defineRouteHandler("/oa/kungfu", (router) => {
       wxReplyHandler.onWxAutoReplyConfig(wxAutoReplyConfig);
     }
 
-    sendMessage(msg.FromUserName, {
-      msgtype: "text",
-      text: {
-        content: `收到消息：${msg.Content}`,
-      },
-    });
-
     wxReplyHandler.triggerKeywordsReply(res, msg);
   });
 
