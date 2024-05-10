@@ -62,6 +62,36 @@ defineRouteHandler("/oa/kungfu", (router) => {
     ]
   );
 
+  wxReplyHandler.onKeywords(
+    [/^图片$/],
+    [
+      {
+        MsgType: "image",
+        Image: {
+          MediaId:
+            "CewqJ1zcRZ2hCc8d_BP2OF6hy-AB3jk13Nbf_s9vbtWxiz973ZM-EqyXDle5hVWh",
+        },
+      },
+    ]
+  );
+
+  wxReplyHandler.onKeywords(
+    [/^图片1$/],
+    [
+      {
+        MsgType: "text",
+        Content: "测试成功1",
+      },
+      {
+        MsgType: "image",
+        Image: {
+          MediaId:
+            "CewqJ1zcRZ2hCc8d_BP2OF6hy-AB3jk13Nbf_s9vbtWxiz973ZM-EqyXDle5hVWh",
+        },
+      },
+    ]
+  );
+
   let wxAutoReplyConfig: WxAutoReply.Config | null = null;
   wxMsgHandler.on("text", async (msg, _, res) => {
     console.log("text msg", msg);
