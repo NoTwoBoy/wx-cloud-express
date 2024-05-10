@@ -131,11 +131,12 @@ export const useWxReply = () => {
     };
   };
 
+  const builder = new xml2js.Builder({
+    rootName: "xml",
+    headless: true,
+    cdata: true,
+  });
   const buildReplyXml = (reply: Required<WxReply.AllReplyMsg>) => {
-    const builder = new xml2js.Builder({
-      rootName: "xml",
-      headless: true,
-    });
     return builder.buildObject(reply);
   };
 
@@ -144,17 +145,8 @@ export const useWxReply = () => {
     reply: Required<WxReply.AllReplyMsg>
   ) => {
     const xml = buildReplyXml(reply);
-    function escapeHtml(text: string) {
-      return text
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-    }
-    console.log(
-      `reply by response xml \n <pre><code>${escapeHtml(xml)}</code></pre>`
-    );
+
+    console.log(`reply by response xml`, xml);
 
     return new Promise((resolve) => {
       res
