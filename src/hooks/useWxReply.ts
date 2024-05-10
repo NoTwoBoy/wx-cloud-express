@@ -144,7 +144,17 @@ export const useWxReply = () => {
     reply: Required<WxReply.AllReplyMsg>
   ) => {
     const xml = buildReplyXml(reply);
-    console.log("reply by response xml", xml);
+    function escapeHtml(text: string) {
+      return text
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+    console.log(
+      `reply by response xml \n <pre><code>${escapeHtml(xml)}</code></pre>`
+    );
 
     return new Promise((resolve) => {
       res
