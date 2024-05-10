@@ -38,7 +38,7 @@ const getAutoReplyInfo = () => {
     .get(`/cgi-bin/get_current_autoreply_info?from_appid=wxb02d4dc9dd5c610b`)
     .then((res) => {
       console.log(res);
-      return res;
+      return res as unknown as WxAutoReply.Config;
     });
 };
 

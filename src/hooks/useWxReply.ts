@@ -9,14 +9,117 @@ export const useWxReply = () => {
     "ToUserName" | "FromUserName" | "CreateTime"
   >;
 
-  const keywordsReplies: Array<[RegExp, WxReply.AllReplyMsg[]]> = [];
-  const onKeywords = (reg: RegExp, replies: WxReply.AllReplyMsg[]) => {
-    keywordsReplies.push([reg, replies]);
+  const keywordsReplies: Array<{
+    regExps: RegExp[];
+    replies: WxReply.AllReplyMsg[];
+    config: WxReply.ReplyConfig;
+  }> = [];
+  const onKeywords = (
+    regExps: RegExp[],
+    replies: WxReply.AllReplyMsg[],
+    config?: WxReply.ReplyConfig
+  ) => {
+    config = {
+      replyMode: config?.replyMode || "reply_all",
+    } || { replyMode: "reply_all" };
+
+    keywordsReplies.push({ regExps, replies, config });
   };
 
   let subscribeReplies: WxReply.AllReplyMsg[] = [];
   const onSubscribe = (replies: WxReply.AllReplyMsg[]) => {
+    if (subscribeReplies.length) return;
     subscribeReplies = replies;
+  };
+
+  let defaultReplies: WxReply.AllReplyMsg[] = [];
+  const onDefault = (replies: WxReply.AllReplyMsg[]) => {
+    if (defaultReplies.length) return;
+    defaultReplies = replies;
+  };
+
+  const wxReplyInfo2ReplyMsg = (
+    info: WxAutoReply.ReplyInfo
+  ): WxReply.AllReplyMsg => {
+    switch (info.type) {
+      case "text":
+        return {
+          MsgType: "text",
+          Content: info.content,
+        };
+      case "img":
+        return {
+          MsgType: "image",
+          Image: {
+            MediaId: info.content,
+          },
+        };
+      case "voice":
+        return {
+          MsgType: "voice",
+          Voice: {
+            MediaId: info.content,
+          },
+        };
+      case "video":
+        return {
+          MsgType: "video",
+          Video: {
+            MediaId: info.content,
+            Title: "",
+            Description: "",
+          },
+        };
+      case "news":
+        return {
+          MsgType: "news",
+          ArticleCount: info.news_info.list.length,
+          Articles: {
+            item: info.news_info.list.map((item) => ({
+              Title: item.title,
+              Description: item.digest,
+              PicUrl: item.cover_url,
+              Url: item.content_url,
+            })),
+          },
+        };
+    }
+  };
+
+  const keywordInfo2RegExp = (info: WxAutoReply.KeywordInfo): RegExp => {
+    const { match_mode, content } = info;
+    switch (match_mode) {
+      case "equal":
+        return new RegExp(`^${content}$`);
+      case "contain":
+        return new RegExp(content);
+    }
+  };
+
+  const onWxAutoReplyConfig = (config: WxAutoReply.Config) => {
+    const {
+      is_add_friend_reply_open,
+      add_friend_autoreply_info,
+      is_autoreply_open,
+      keyword_autoreply_info,
+      message_default_autoreply_info,
+    } = config;
+    if (is_add_friend_reply_open && add_friend_autoreply_info) {
+      onSubscribe([wxReplyInfo2ReplyMsg(add_friend_autoreply_info)]);
+    }
+    if (is_autoreply_open) {
+      keyword_autoreply_info?.list.forEach((item) => {
+        const { keyword_list_info, reply_list_info, reply_mode } = item;
+        onKeywords(
+          keyword_list_info.map(keywordInfo2RegExp),
+          reply_list_info.map(wxReplyInfo2ReplyMsg),
+          { replyMode: reply_mode }
+        );
+      });
+
+      message_default_autoreply_info &&
+        onDefault([wxReplyInfo2ReplyMsg(message_default_autoreply_info)]);
+    }
   };
 
   const buildBaseReply = (msg: WxMsg.AllMsg) => {
@@ -128,11 +231,15 @@ export const useWxReply = () => {
   const triggerKeywordsReply = (res: Response, msg: WxMsg.TextMsg) => {
     const { Content } = msg;
     const baseReply = buildBaseReply(msg);
-    for (const [reg, replies] of keywordsReplies) {
-      if (reg.test(Content)) {
+    for (const { regExps, replies, config } of keywordsReplies) {
+      if (regExps.some((regExp) => regExp.test(Content))) {
+        const r =
+          config.replyMode === "random_one"
+            ? [replies[Math.floor(Math.random() * replies.length)]]
+            : replies;
         return reply(
           res,
-          replies.map(
+          r.map(
             (reply) =>
               ({
                 ...baseReply,
@@ -142,6 +249,15 @@ export const useWxReply = () => {
         );
       }
     }
+
+    const replies = defaultReplies.map(
+      (reply) =>
+        ({
+          ...baseReply,
+          ...reply,
+        } as Required<WxReply.AllReplyMsg>)
+    );
+    return reply(res, replies);
   };
 
   const triggerSubscribeReply = (msg: WxMsg.AllMsg) => {
@@ -171,6 +287,7 @@ export const useWxReply = () => {
   return {
     onKeywords,
     onSubscribe,
+    onWxAutoReplyConfig,
     triggerReply,
     triggerKeywordsReply,
     triggerSubscribeReply,

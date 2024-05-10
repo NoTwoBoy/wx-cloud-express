@@ -3,6 +3,7 @@ export {};
 declare global {
   type MakeRequired<T, K extends keyof T> = Omit<T, K> & Required<Pick<T, K>>;
 
+  // 微信消息推送
   namespace WxMsg {
     type MsgType =
       | "text"
@@ -67,6 +68,7 @@ declare global {
     type AllMsg = TextMsg | AllEventMsg;
   }
 
+  // 微信通过用户消息推送 response 回复消息
   namespace WxReply {
     type ReplyMsgType = "text" | "image" | "voice" | "video" | "music" | "news";
 
@@ -137,8 +139,13 @@ declare global {
       | VideoReplyMsg
       | MusicReplyMsg
       | NewsReplyMsg;
+
+    interface ReplyConfig {
+      replyMode?: "reply_all" | "random_one";
+    }
   }
 
+  // 微信通过客服发送消息
   namespace WxSendMsg {
     type SendMsgType = "text" | "image" | "voice" | "video" | "music" | "news";
 
@@ -203,5 +210,74 @@ declare global {
       | VideoSendMsg
       | MusicSendMsg
       | NewsSendMsg;
+  }
+
+  // 微信官方自动回复配置信息
+  namespace WxAutoReply {
+    interface Config {
+      is_add_friend_reply_open: number;
+      is_autoreply_open: number;
+      add_friend_autoreply_info?: ReplyInfo;
+      message_default_autoreply_info?: ReplyInfo;
+      keyword_autoreply_info?: KeywordAutoReplyInfo;
+    }
+
+    interface KeywordAutoReplyInfo {
+      list: KeywordAutoReplyInfoItem[];
+    }
+
+    type ReplyMode = "random_one" | "reply_all";
+
+    interface KeywordAutoReplyInfoItem {
+      rule_name: string;
+      create_time: number;
+      reply_mode: ReplyMode;
+      keyword_list_info: KeywordInfo[];
+      reply_list_info: ReplyInfo[];
+    }
+
+    type ReplyType = "text" | "img" | "voice" | "video" | "news";
+
+    interface BaseReplyInfo<T extends ReplyType> {
+      type: T;
+      content: string;
+    }
+
+    interface TextReplyInfo extends BaseReplyInfo<"text"> {}
+    interface ImageReplyInfo extends BaseReplyInfo<"img"> {}
+    interface VoiceReplyInfo extends BaseReplyInfo<"voice"> {}
+    interface VideoReplyInfo extends BaseReplyInfo<"video"> {}
+    interface NewsReplyInfo extends BaseReplyInfo<"news"> {
+      news_info: NewsInfo;
+    }
+
+    type ReplyInfo =
+      | TextReplyInfo
+      | ImageReplyInfo
+      | VoiceReplyInfo
+      | VideoReplyInfo
+      | NewsReplyInfo;
+
+    interface NewsInfo {
+      list: NewsInfoItem[];
+    }
+
+    interface NewsInfoItem {
+      title: string;
+      author: string;
+      digest: string;
+      show_cover: number;
+      cover_url: string;
+      content_url: string;
+      source_url: string;
+    }
+
+    type MatchMode = "equal" | "contain";
+
+    interface KeywordInfo {
+      type: string;
+      match_mode: MatchMode;
+      content: string;
+    }
   }
 }

@@ -20,38 +20,47 @@ defineRouteHandler("/oa/kungfu", (router) => {
   const wxMsgHandler = useWxMsg();
   const wxReplyHandler = useWxReply();
 
-  wxReplyHandler.onKeywords(/^test$/, [
-    {
-      MsgType: "text",
-      Content: "测试成功",
-    },
-  ]);
+  wxReplyHandler.onKeywords(
+    [/^test$/],
+    [
+      {
+        MsgType: "text",
+        Content: "测试成功",
+      },
+    ]
+  );
 
-  wxReplyHandler.onKeywords(/^test2$/, [
-    {
-      MsgType: "text",
-      Content: "测试成功1",
-    },
-    {
-      MsgType: "text",
-      Content: "测试成功2",
-    },
-  ]);
+  wxReplyHandler.onKeywords(
+    [/^test2$/],
+    [
+      {
+        MsgType: "text",
+        Content: "测试成功1",
+      },
+      {
+        MsgType: "text",
+        Content: "测试成功2",
+      },
+    ]
+  );
 
-  wxReplyHandler.onKeywords(/^test3$/, [
-    {
-      MsgType: "text",
-      Content: "测试成功1",
-    },
-    {
-      MsgType: "text",
-      Content: "测试成功2",
-    },
-    {
-      MsgType: "text",
-      Content: "测试成功3",
-    },
-  ]);
+  wxReplyHandler.onKeywords(
+    [/^test3$/],
+    [
+      {
+        MsgType: "text",
+        Content: "测试成功1",
+      },
+      {
+        MsgType: "text",
+        Content: "测试成功2",
+      },
+      {
+        MsgType: "text",
+        Content: "测试成功3",
+      },
+    ]
+  );
 
   wxReplyHandler.onSubscribe([
     {
@@ -60,16 +69,20 @@ defineRouteHandler("/oa/kungfu", (router) => {
     },
   ]);
 
-  wxMsgHandler.on("text", (msg, _, res) => {
+  let wxAutoReplyConfig: WxAutoReply.Config | null = null;
+  wxMsgHandler.on("text", async (msg, _, res) => {
     console.log("text msg", msg);
-    if (msg?.MsgType === "text") {
-      sendMessage(msg.FromUserName, {
-        msgtype: "text",
-        text: {
-          content: `收到消息：${msg.Content}`,
-        },
-      });
+    if (!wxAutoReplyConfig) {
+      wxAutoReplyConfig = await getAutoReplyInfo();
+      wxReplyHandler.onWxAutoReplyConfig(wxAutoReplyConfig);
     }
+
+    sendMessage(msg.FromUserName, {
+      msgtype: "text",
+      text: {
+        content: `收到消息：${msg.Content}`,
+      },
+    });
 
     wxReplyHandler.triggerKeywordsReply(res, msg);
   });
@@ -84,7 +97,7 @@ defineRouteHandler("/oa/kungfu", (router) => {
             wx_unionid: req.wxUnionid,
           },
           {
-            kf_oa_openid: req.wxOpenid,
+            kf_oa_openid: req.wxOpenid || msg.FromUserName,
           }
         )
       );
