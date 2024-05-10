@@ -113,7 +113,7 @@ defineRouteHandler("/oa/kungfu", (router) => {
       } else if (req.method === "POST") {
         const msg = (req.body.xml || req.body) as WxMsg.AllMsg;
 
-        wxMsgHandler.emit(msg, req, res);
+        return wxMsgHandler.emit(msg, req, res);
       }
     } else {
       console.log("invalid request");
