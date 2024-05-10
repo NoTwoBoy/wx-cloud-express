@@ -62,13 +62,6 @@ defineRouteHandler("/oa/kungfu", (router) => {
     ]
   );
 
-  wxReplyHandler.onSubscribe([
-    {
-      MsgType: "text",
-      Content: "欢迎关注",
-    },
-  ]);
-
   let wxAutoReplyConfig: WxAutoReply.Config | null = null;
   wxMsgHandler.on("text", async (msg, _, res) => {
     console.log("text msg", msg);
