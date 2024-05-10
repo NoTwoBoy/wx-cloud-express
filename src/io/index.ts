@@ -11,9 +11,11 @@ wxAxios.interceptors.response.use((res) => {
   return res.data;
 });
 
+const { KUNGFU_OA_APPID } = process.env;
+
 const getUsers = () => {
   return wxAxios
-    .get(`/cgi-bin/user/get?from_appid=wxb02d4dc9dd5c610b`)
+    .get(`/cgi-bin/user/get?from_appid=${KUNGFU_OA_APPID}`)
     .then((res) => {
       console.log(res.data);
       return res.data;
@@ -25,7 +27,7 @@ const getUsers = () => {
 
 const getUserInfo = (openid: string) => {
   return wxAxios
-    .get(`/cgi-bin/user/info?from_appid=wxb02d4dc9dd5c610b&openid=${openid}`)
+    .get(`/cgi-bin/user/info?from_appid=${KUNGFU_OA_APPID}&openid=${openid}`)
     .then((res) => {
       console.log(res.data);
       return res.data;
@@ -35,7 +37,7 @@ const getUserInfo = (openid: string) => {
 
 const getAutoReplyInfo = () => {
   return wxAxios
-    .get(`/cgi-bin/get_current_autoreply_info?from_appid=wxb02d4dc9dd5c610b`)
+    .get(`/cgi-bin/get_current_autoreply_info?from_appid=${KUNGFU_OA_APPID}`)
     .then((res) => {
       console.log(res);
       return res as unknown as WxAutoReply.Config;
@@ -86,7 +88,7 @@ const sendFactorResult = (config: {
   };
 
   return wxAxios
-    .post(`/cgi-bin/message/template/send?from_appid=wxb02d4dc9dd5c610b`, data)
+    .post(`/cgi-bin/message/template/send?from_appid=${KUNGFU_OA_APPID}`, data)
     .then((res) => {
       console.log(res);
       return res.data;
