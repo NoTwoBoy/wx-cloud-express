@@ -121,8 +121,6 @@ defineRouteHandler("/oa/kungfu", (router) => {
         const msg = (req.body.xml || req.body) as WxMsg.AllMsg;
 
         wxMsgHandler.emit(msg, req, res);
-
-        return res.status(200).send("success");
       }
     }
 
