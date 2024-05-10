@@ -121,12 +121,14 @@ defineRouteHandler("/oa/kungfu", (router) => {
     }
   });
 
-  router.get("/users", async (req, res) => {
+  router.get("/users", async (_, res) => {
     res.success(await getUsers());
   });
 
-  router.get("/autoReplyInfo", async (req, res) => {
-    res.success(await getAutoReplyInfo());
+  router.get("/autoReplyInfo", async (_, res) => {
+    wxAutoReplyConfig = await getAutoReplyInfo();
+    wxReplyHandler.onWxAutoReplyConfig(wxAutoReplyConfig);
+    res.success(wxAutoReplyConfig);
   });
 
   router.get("/userInfo", async (req, res) => {

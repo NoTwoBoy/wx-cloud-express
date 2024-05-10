@@ -146,7 +146,11 @@ export const useWxReply = () => {
     console.log("reply by response xml", reply);
 
     return new Promise((resolve) => {
-      res.send(buildReplyXml(reply)).end().once("finish", resolve);
+      res
+        .header("Content-Type", "text/xml")
+        .send(buildReplyXml(reply))
+        .end()
+        .once("finish", resolve);
     });
   };
 
