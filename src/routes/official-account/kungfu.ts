@@ -115,10 +115,10 @@ defineRouteHandler("/oa/kungfu", (router) => {
 
         wxMsgHandler.emit(msg, req, res);
       }
+    } else {
+      console.log("invalid request");
+      res.success("非法请求");
     }
-
-    console.log("invalid request");
-    res.success("非法请求");
   });
 
   router.get("/users", async (req, res) => {
