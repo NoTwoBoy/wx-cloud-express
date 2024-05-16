@@ -66,3 +66,24 @@ export const syncUser = async (
 
   return Promise.reject(new Error("wx_unionid is required"));
 };
+
+export const isSubscribed = async (
+  where: RequiredPartial<UserCreationAttributes, "wx_unionid">
+) => {
+  if (where.wx_unionid) {
+    const [err, existedUser] = await tryAwait(
+      User.findOne({
+        where,
+      })
+    );
+    if (existedUser) {
+      return !!existedUser.get("subscribed_factor");
+    } else if (!err) {
+      return false;
+    } else {
+      return Promise.reject(err);
+    }
+  }
+
+  return Promise.reject(new Error("wx_unionid is required"));
+};

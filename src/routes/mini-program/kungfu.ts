@@ -1,6 +1,6 @@
 import { defineRouteHandler } from "../defineRouteHandler";
 import { checkSignature, tryAwait } from "../../utils";
-import { syncUser } from "../../db/user";
+import { isSubscribed, syncUser } from "../../db/user";
 
 defineRouteHandler("/mp/kungfu", (router) => {
   router.all("/message", async (req, res) => {
@@ -11,6 +11,24 @@ defineRouteHandler("/mp/kungfu", (router) => {
     console.log("query", req.query);
     const result = checkSignature(req.query);
     res.send(result && req.query.echostr);
+  });
+
+  router.get("/subscribe", async (req, res) => {
+    if (req.wxUnionid) {
+      const [err, subscribed] = await tryAwait(
+        isSubscribed({
+          wx_unionid: req.wxUnionid,
+        })
+      );
+
+      if (typeof subscribed === "boolean") {
+        res.success(subscribed);
+      } else {
+        res.error(err.message);
+      }
+    } else {
+      res.error("wx_unionid not found");
+    }
   });
 
   router.post("/subscribe", async (req, res) => {
@@ -39,6 +57,8 @@ defineRouteHandler("/mp/kungfu", (router) => {
       } else {
         res.error(err.message);
       }
+    } else {
+      res.error("wx_unionid not found");
     }
   });
 });
