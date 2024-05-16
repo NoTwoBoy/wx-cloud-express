@@ -40,10 +40,8 @@ export const User = sequelize.define<UserInstance>("User", {
   },
 });
 
-// 使传入的interface中某个key为必选的泛型
-
 export const syncUser = async (
-  where: MakeRequired<UserCreationAttributes, "wx_unionid">,
+  where: RequiredPartial<UserCreationAttributes, "wx_unionid">,
   update?: UserCreationAttributes
 ) => {
   if (where.wx_unionid) {

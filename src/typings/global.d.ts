@@ -1,7 +1,11 @@
 export {};
 
 declare global {
-  type MakeRequired<T, K extends keyof T> = Omit<T, K> & Required<Pick<T, K>>;
+  type RequiredPartial<
+    T extends object,
+    R extends keyof T,
+    P extends Exclude<keyof T, R> = Exclude<keyof T, R>
+  > = Required<Pick<T, R>> & Partial<Pick<T, P>> & Omit<T, R | P>;
 
   // 微信消息推送
   namespace WxMsg {
